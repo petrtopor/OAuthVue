@@ -1,6 +1,17 @@
 <template lang="pug">
   #input_phone
-    input(type='text' ref='input' @focus="onInputFocus" @blur="onInputBlur" v-model="inputText")
+    masked-input(
+      type="text"
+      name="phone"
+      class="form-control"
+      v-model="inputText"
+      :mask="['(', /[1-9]/, /[1-9]/, /[1-9]/, ')', ' ', /[1-9]/, /[1-9]/, /[1-9]/, '-', /[1-9]/, /[1-9]/, /[1-9]/, /[1-9]/]"
+      :guide="false"
+      placeholderChar="_"
+      @focus="onInputFocus"
+      @blur="onInputBlur"
+      ref='input')
+    //- input(type='text' ref='input' @focus="onInputFocus" @blur="onInputBlur" v-model="inputText")
     span(v-bind:class="{ aside: isSpanAside }" @click="onSpanClick") Введите ваш телефон
     .hint_phone
       .triangle
@@ -139,12 +150,17 @@ div#input_phone {
 }
 </style>
 <script>
+import MaskedInput from 'vue-text-mask'
 export default {
   name: 'InputPhone',
+  components: {
+    MaskedInput
+  },
   data() {
     return {
       isInputActive: false,
-      inputText: ''
+      inputText: '',
+      phone: ''
     }
   },
   computed: {
@@ -154,13 +170,21 @@ export default {
     }
   },
   methods: {
+    fuck() {
+      // eslint-disable-next-line
+      console.log(this.$refs.input.$el)
+    },
     onSpanClick() {
-      this.$refs.input.focus()
+      // this.$refs.input.focus()
+      this.$refs.input.$el.focus()
     },
     onInputFocus() {
       this.isInputActive = true
     },
     onInputBlur() {
+      if (this.inputText === '(') {
+        this.inputText = ''
+      }
       this.isInputActive = false
     }
   }
