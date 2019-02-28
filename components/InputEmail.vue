@@ -12,7 +12,7 @@
       @focus="onInputFocus"
       @blur="onInputBlur"
       ref='input')
-    span Введите почту, с которой отправляете письма
+    span(v-bind:class="{ aside: isSpanAside }" @click="onSpanClick") Введите почту, с которой отправляете письма
 </template>
 <style lang="scss" scoped>
 div#input_email {
@@ -86,15 +86,28 @@ export default {
       testData: 'vagiz',
       selected: '',
       emailMask: emailMask,
-      inputText: ''
+      inputText: '',
+      isInputActive: false
+    }
+  },
+  computed: {
+    isSpanAside() {
+      // eslint-disable-next-line
+      return (this.isInputActive || (!this.isInputActive && this.inputText !== ''))
     }
   },
   methods: {
+    onSpanClick() {
+      this.$refs.input.$el.focus()
+    },
     onInputFocus() {
-      //
+      this.isInputActive = true
     },
     onInputBlur() {
-      //
+      if (this.inputText === '(') {
+        this.inputText = ''
+      }
+      this.isInputActive = false
     }
   }
 }
