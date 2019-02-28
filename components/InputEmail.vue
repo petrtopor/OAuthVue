@@ -1,6 +1,17 @@
 <template lang="pug">
   #input_email
-    input(type='text')
+    //- input(type='text')
+    masked-input(
+      type="text"
+      name="phone"
+      class="form-control"
+      v-model="inputText"
+      :mask="emailMask"
+      :guide="false"
+      placeholderChar="_"
+      @focus="onInputFocus"
+      @blur="onInputBlur"
+      ref='input')
     span Введите почту, с которой отправляете письма
 </template>
 <style lang="scss" scoped>
@@ -63,12 +74,27 @@ div#input_email {
 </style>
 
 <script>
+import MaskedInput from 'vue-text-mask'
+import emailMask from 'text-mask-addons/dist/emailMask'
 export default {
   name: 'InputEmail',
+  components: {
+    MaskedInput
+  },
   data() {
     return {
       testData: 'vagiz',
-      selected: ''
+      selected: '',
+      emailMask: emailMask,
+      inputText: ''
+    }
+  },
+  methods: {
+    onInputFocus() {
+      //
+    },
+    onInputBlur() {
+      //
     }
   }
 }
