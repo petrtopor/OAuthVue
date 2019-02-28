@@ -34,14 +34,13 @@
         </svg>
     #label_2
       span или зарегистрируйтесь, заполнив поля
-    <InputEmail/>
-    <InputPhone/>
+    <InputEmail @inputValidChange="onEmailInputValidChange"/>
+    <InputPhone @inputValidChange="onPhoneInputValidChange"/>
     #label_3
       span Какой CRM системой вы пользуетесь?
-    <SelectorCrm/>
-    <InputPromo v-if="showInputPromo"/>
-    #button_registration
-      span Зарегистрироваться бесплатно
+    <SelectorCrm @crmSelected="onCrmSelected"/>
+    <InputPromo v-if="showInputPromo" @inputValidChange="onPromoInputValidChange"/>
+    <ButtonRegistration :isActive="isButtonRegistrationActive" @regClick="onRegClick"/>
     #already_have
       #prm_mujud(@click='toggleShowInputPromo')
         span У меня есть промокод
@@ -190,37 +189,37 @@ div#container {
     }
   }
 
-  div#button_registration {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 60px;
-    margin-top: 24px;
-    background: linear-gradient(
-        125.63deg,
-        rgba(254, 159, 124, 0.3) 12.79%,
-        rgba(254, 125, 123, 0.3) 95.63%
-      ),
-      #ffffff;
-    box-shadow: 0px 5px 12px rgba(179, 83, 83, 0.07);
-    border-radius: 4px;
+  // div#button_registration {
+  //   display: flex;
+  //   justify-content: space-around;
+  //   align-items: center;
+  //   height: 60px;
+  //   margin-top: 24px;
+  //   background: linear-gradient(
+  //       125.63deg,
+  //       rgba(254, 159, 124, 0.3) 12.79%,
+  //       rgba(254, 125, 123, 0.3) 95.63%
+  //     ),
+  //     #ffffff;
+  //   box-shadow: 0px 5px 12px rgba(179, 83, 83, 0.07);
+  //   border-radius: 4px;
 
-    span {
-      /* Зарегистрироваться бесплатно */
-      font-family: PT Sans;
-      font-style: normal;
-      font-weight: bold;
-      line-height: normal;
-      font-size: 18px;
-      color: #ffffff;
-    }
+  //   span {
+  //     /* Зарегистрироваться бесплатно */
+  //     font-family: PT Sans;
+  //     font-style: normal;
+  //     font-weight: bold;
+  //     line-height: normal;
+  //     font-size: 18px;
+  //     color: #ffffff;
+  //   }
 
-    &.active {
-      background: linear-gradient(125.63deg, #fe9f7c 12.79%, #fe7d7b 95.63%);
-      box-shadow: 0px 5px 12px rgba(60, 28, 28, 0.21);
-      cursor: pointer;
-    }
-  }
+  //   &.active {
+  //     background: linear-gradient(125.63deg, #fe9f7c 12.79%, #fe7d7b 95.63%);
+  //     box-shadow: 0px 5px 12px rgba(60, 28, 28, 0.21);
+  //     cursor: pointer;
+  //   }
+  // }
 
   div#already_have {
     display: flex;
@@ -289,26 +288,79 @@ div#container {
 }
 </style>
 <script>
+/* eslint-disable */
 import SelectorCrm from '~/components/SelectorCrm.vue'
 import InputEmail from '~/components/InputEmail.vue'
 import InputPhone from '~/components/InputPhone.vue'
 import InputPromo from '~/components/InputPromo.vue'
+import ButtonRegistration from '~/components/ButtonRegistration.vue'
 
 export default {
   components: {
     SelectorCrm,
     InputEmail,
     InputPhone,
-    InputPromo
+    InputPromo,
+    ButtonRegistration
   },
   data() {
     return {
-      showInputPromo: false
+      showInputPromo: false,
+      isEmailInputValid: false,
+      isPhoneInputValid: false,
+      isPromoInputValid: false,
+      RegEmail: '',
+      RegPhone: '',
+      CrmName: '',
+      Promo: '',
+      Language: ''
+    }
+  },
+  computed: {
+    isButtonRegistrationActive() {
+      return this.isEmailInputValid && this.isPhoneInputValid
     }
   },
   methods: {
     toggleShowInputPromo() {
       this.showInputPromo = !this.showInputPromo
+    },
+    onEmailInputValidChange(payload) {
+      this.isEmailInputValid = payload.isValid
+      this.RegEmail = payload.value
+    },
+    onPhoneInputValidChange(payload) {
+      this.isPhoneInputValid = payload.isValid
+      // eslint-disable-next-line
+      this.RegPhone = payload.value.replace(/[\(\)\s\-]+/g, '')
+    },
+    onPromoInputValidChange(payload) {
+      this.isPromoInputValid = payload.isValid
+      this.Promo = payload.value
+    },
+    onCrmSelected(value) {
+      this.CrmName = value
+    },
+    onRegClick() {
+      this.$axios
+        // eslint-disable
+        .post('https://b2bfamily.com/Account/PostRegister', {
+          'model': {
+            'RegEmail': this.RegEmail,
+            'RegPhone': this.RegPhone,
+            'CrmName': this.CrmName,
+            'Promo': this.Promo,
+            'Language': 'ru'
+          }
+        })
+        .then(function(response) {
+          // eslint-disable-next-line
+          console.log('response.then: ', response);
+        })
+        .catch(function(error) {
+          // eslint-disable-next-line
+          console.log('response.error: ', error);
+        })
     }
   }
 }

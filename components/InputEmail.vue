@@ -11,9 +11,11 @@
       placeholderChar="_"
       @focus="onInputFocus"
       @blur="onInputBlur"
+      @input="onInput"
       ref='input')
     span(v-bind:class="{ aside: isSpanAside }" @click="onSpanClick") Введите почту, с которой отправляете письма
 </template>
+
 <style lang="scss" scoped>
 div#input_email {
   display: flex;
@@ -74,6 +76,7 @@ div#input_email {
 </style>
 
 <script>
+import _ from 'lodash'
 import MaskedInput from 'vue-text-mask'
 import emailMask from 'text-mask-addons/dist/emailMask'
 export default {
@@ -94,6 +97,10 @@ export default {
     isSpanAside() {
       // eslint-disable-next-line
       return (this.isInputActive || (!this.isInputActive && this.inputText !== ''))
+    },
+    isValid() {
+      // eslint-disable-next-line
+      return (this.inputText.length < 100) && /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([а-яА-ЯёЁa-zA-Z\-0-9]+\.)+[а-яА-ЯёЁa-zA-Z]{2,}))$/i.test(this.inputText)
     }
   },
   methods: {
@@ -108,7 +115,13 @@ export default {
         this.inputText = ''
       }
       this.isInputActive = false
-    }
+    },
+    onInput: _.debounce(function() {
+      this.$emit('inputValidChange', {
+        isValid: this.isValid,
+        value: this.inputText
+      })
+    }, 100)
   }
 }
 </script>

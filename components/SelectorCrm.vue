@@ -1,16 +1,16 @@
 <template lang="pug">
   #selector_crm
     .option
-      input(type='radio' name='foo' value='amo' v-model='selected')
+      input(type='radio' name='foo' value='amo' v-model='selected' @change="crmSelect")
       span amoCRM
     .option
-      input(type='radio' name='foo' value='bitrix24' v-model='selected')
+      input(type='radio' name='foo' value='bitrix24' v-model='selected' @change="crmSelect")
       span Битрикс24
     .option
-      input(type='radio' name='foo' value='other' v-model='selected')
+      input(type='radio' name='foo' value='other' v-model='selected' @change="crmSelect")
       span Другой
     .option
-      input(type='radio' name='foo' value='none' v-model='selected')
+      input(type='radio' name='foo' value='none' v-model='selected' @change="crmSelect")
       span Нет CRM
 </template>
 <script>
@@ -18,8 +18,12 @@ export default {
   name: 'SelectorCrm',
   data() {
     return {
-      testData: 'vagiz',
       selected: ''
+    }
+  },
+  methods: {
+    crmSelect(event) {
+      this.$emit('crmSelected', this.selected)
     }
   }
 }

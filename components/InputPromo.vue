@@ -27,16 +27,6 @@ export default {
     isSpanAside() {
       // eslint-disable-next-line
       return (this.isInputActive || (!this.isInputActive && this.inputText !== ''))
-      // if (this.isInputActive) {
-      //   return true
-      // } else {
-      //   // eslint-disable-next-line
-      //   if (this.inputText === '') {
-      //     return false
-      //   } else {
-      //     return true
-      //   }
-      // }
     },
     showError() {
       if (this.isInputActive && this.inputText !== '') {
@@ -61,7 +51,12 @@ export default {
       }
     },
     isPromoCorrect() {
-      return this.response !== null
+      const valid = this.response !== null
+      this.$emit('inputValidChange', {
+        isValid: valid,
+        value: this.inputText
+      })
+      return valid
     }
   },
   methods: {

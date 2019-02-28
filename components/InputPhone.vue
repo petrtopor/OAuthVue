@@ -10,10 +10,11 @@
       placeholderChar="_"
       @focus="onInputFocus"
       @blur="onInputBlur"
+      @input="onInput"
       ref='input')
     //- input(type='text' ref='input' @focus="onInputFocus" @blur="onInputBlur" v-model="inputText")
     span(v-bind:class="{ aside: isSpanAside }" @click="onSpanClick") Введите ваш телефон
-    .hint_phone
+    .hint_phone(v-if="showHintPhone")
       .triangle
       #hider
       span Зачем указывать телефон?
@@ -81,7 +82,7 @@ div#input_phone {
     position: absolute;
     left: 468px;
     top: 0px;
-    display: none;
+    display: felx;
     flex-direction: column;
     justify-content: center;
     width: 246px;
@@ -150,6 +151,7 @@ div#input_phone {
 }
 </style>
 <script>
+import _ from 'lodash'
 import MaskedInput from 'vue-text-mask'
 export default {
   name: 'InputPhone',
@@ -159,14 +161,19 @@ export default {
   data() {
     return {
       isInputActive: false,
-      inputText: '',
-      phone: ''
+      inputText: ''
     }
   },
   computed: {
     isSpanAside() {
       // eslint-disable-next-line
       return (this.isInputActive || (!this.isInputActive && this.inputText !== ''))
+    },
+    showHintPhone() {
+      return this.isInputActive && this.inputText === ''
+    },
+    isValid() {
+      return /^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$/.test(this.inputText)
     }
   },
   methods: {
@@ -186,7 +193,14 @@ export default {
         this.inputText = ''
       }
       this.isInputActive = false
-    }
+    },
+    onInput: _.debounce(function() {
+      // this.$emit('inputValidChange', this.isValid)
+      this.$emit('inputValidChange', {
+        isValid: this.isValid,
+        value: this.inputText
+      })
+    }, 100)
   }
 }
 </script>
